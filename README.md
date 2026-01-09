@@ -1,6 +1,6 @@
 # Bus Reservation System
 
-A full-stack bus reservation system built with Node.js/Express backend and Nuxt.js frontend applications. The system implements advanced seat availability algorithms, dynamic pricing based on seat priority, and comprehensive reservation management.
+A full-stack bus reservation system with a Node.js/Express backend and separate Nuxt.js frontend applications for customers and administrators. The system handles seat availability across route segments, dynamic pricing based on seat priority, and reservation management.
 
 ## Screenshots
 
@@ -19,11 +19,11 @@ A full-stack bus reservation system built with Node.js/Express backend and Nuxt.
 
 ## Architecture
 
-The system follows a three-tier architecture:
+The system consists of three applications:
 
-- **Backend API**: RESTful API built with Express.js, MongoDB, and Mongoose ODM
-- **Client Application**: Customer-facing SPA built with Nuxt.js 3
-- **Admin Panel**: Administrative interface built with Nuxt.js 3
+- **Backend API**: RESTful API with Express.js, MongoDB, and Mongoose
+- **Client Application**: Customer-facing application with Nuxt.js 3
+- **Admin Panel**: Administrative interface with Nuxt.js 3
 
 ### Project Structure
 
@@ -87,39 +87,39 @@ bus-reservation/
 
 ### Seat Availability Algorithm
 
-The system implements a sophisticated seat availability algorithm that handles overlapping reservations across route segments:
+The system handles overlapping reservations across route segments:
 
 1. **Route Segment Mapping**: Each trip route is mapped to a sequential array of stop indices
 2. **Reservation Conflict Detection**: For each seat, existing reservations are checked for conflicts with the requested route segment
-3. **Free Range Calculation**: Available segments are calculated using a range-building algorithm that identifies gaps between reservations
+3. **Free Range Calculation**: Available segments are calculated by identifying gaps between existing reservations
 4. **Priority Assignment**: Seats are assigned priority based on the minimum extra space available beyond the requested segment
 5. **Dynamic Pricing**: Price is calculated using a multiplier based on seat priority and route segment pricing
 
-**Algorithm Complexity**: O(n * m) where n is the number of seats and m is the average number of reservations per seat.
+Time complexity: O(n * m) where n is the number of seats and m is the average number of reservations per seat.
 
 ### Dynamic Pricing System
 
-Pricing is calculated using a multi-factor approach:
+Pricing calculation:
 
 - **Base Price**: Sum of prices for all route segments between origin and destination
 - **Priority Multiplier**: `1 + (priority - 1) / (maxPriority - 1)` where priority ranges from 1 to maxPriority
 - **Final Price**: `ceil(basePrice * priorityMultiplier)`
 
-This ensures that seats with less availability (higher priority) are priced higher, creating a dynamic pricing model that adapts to demand.
+Seats with less availability (higher priority) are priced higher.
 
 ### Reservation System
 
 - **PNR Generation**: 8-digit numeric PNR codes generated using nanoid
 - **Conflict Prevention**: Seat conflicts are prevented at the database level
-- **Status Management**: Reservations support three states: `booked`, `cancelled`, `completed`
+- **Status Management**: Reservations have three states: `booked`, `cancelled`, `completed`
 - **Guest Reservations**: Supports both authenticated user reservations and guest reservations with passenger details
 
 ### Authentication & Authorization
 
-- **JWT-based Authentication**: Bearer token authentication with configurable expiration
+- **JWT-based Authentication**: Bearer token authentication
 - **Role-based Access Control**: Two roles - `admin` and `user`
 - **Optional Authentication**: Some endpoints support optional authentication for guest users
-- **Password Security**: bcrypt hashing with salt rounds
+- **Password Security**: bcrypt hashing
 
 ## API Specification
 
@@ -175,8 +175,6 @@ http://localhost:3000/api
 
 ### Detailed Endpoint Documentation
 
-### Authentication Endpoints
-
 #### POST /api/auth/register
 Register a new user account.
 
@@ -216,7 +214,7 @@ Get current session information.
 ### Trip Endpoints
 
 #### GET /api/trip/search
-Search for trips based on origin, destination, and date.
+Search for trips by origin, destination, and date.
 
 **Query Parameters**:
 - `fromStopId`: MongoDB ObjectId of origin stop
@@ -543,14 +541,6 @@ Coverage reports are generated in the `coverage/` directory.
 ## License
 
 MIT
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
 
 ---
 
