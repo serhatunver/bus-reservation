@@ -1,138 +1,57 @@
 import { defineStore } from 'pinia';
-
-const baseUrl = 'http://localhost:3000/api/reservation';
-const { token } = useAuth();
+import type {
+  MakeReservationPayload,
+  Reservation,
+  ReservationActionResponse,
+  ReservationResponse,
+} from '~/types/reservation';
 
 export const useReservationStore = defineStore('reservation', () => {
-  const makeReservation = async ({
-    tripId,
-    fromStopId,
-    toStopId,
-    seatNumber,
-    price,
-    passengerName,
-    passengerSurname,
-    email,
-    phone,
-  }: {
-    tripId: string;
-    fromStopId: string;
-    toStopId: string;
-    seatNumber: number;
-    price: number;
-    passengerName: string;
-    passengerSurname: string;
-    email: string;
-    phone: string;
-  }) => {
-    try {
-      const response = await fetch(`${baseUrl}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: token.value || '',
-        },
-        body: JSON.stringify({
-          tripId,
-          fromStopId,
-          toStopId,
-          seatNumber,
-          price,
-          passengerName,
-          passengerSurname,
-          email,
-          phone,
-        }),
-      });
+  const { get, post, put } = useApi();
 
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-
-      const data = await response.json();
-      console.log('Reservation successful:', data);
-      return data;
-    } catch (error) {
-      console.error('makeReservation error:', error);
-      throw error;
-    }
+  const makeReservation = async (
+    payload: MakeReservationPayload
+  ): Promise<ReservationActionResponse> => {
+    return await post<ReservationActionResponse>('/reservation', payload);
   };
 
-  const fetchReservationDetails = async (pnr: string, email: string) => {
-    try {
-      const response = await fetch(`${baseUrl}/pnr/${pnr}/email/${email}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: token.value || '',
-        },
-      });
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
+  const fetchReservationDetails = async (
+    pnr: string,
+    email: string
+  ): Promise<Reservation> => {
+    const data = await get<ReservationResponse>(
+      `/reservation/pnr/${encodeURIComponent(pnr)}/email/${encodeURIComponent(email)}`
+    );
 
-      const data = await response.json();
-
-      // Assuming the response contains reservation details
-      if (!data || !data.reservation) {
-        throw new Error('No reservation found for the provided PNR and email');
-      }
-
-      return data.reservation;
-    } catch (error) {
-      console.error('fetchReservationDetails error:', error);
-      throw error;
+    if (!data?.reservation) {
+      throw new Error('No reservation found for the provided PNR and email');
     }
-  };
-  const fetchReservationDetailsByPnr = async (pnr: string) => {
-    try {
-      const response = await fetch(`${baseUrl}/pnr/${pnr}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: token.value || '',
-        },
-      });
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
 
-      const data = await response.json();
-
-      // Assuming the response contains reservation details
-      if (!data || !data.reservation) {
-        throw new Error('No reservation found for the provided PNR and email');
-      }
-
-      return data.reservation;
-    } catch (error) {
-      console.error('fetchReservationDetails error:', error);
-      throw error;
-    }
+    return data.reservation;
   };
 
-  const cancelReservation = async (pnr: string, email: string) => {
-    try {
-      const response = await fetch(`${baseUrl}/cancel-reservation`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: token.value || '',
-        },
-        body: JSON.stringify({ pnr, email }),
-      });
+  const fetchReservationDetailsByPnr = async (
+    pnr: string
+  ): Promise<Reservation> => {
+    const data = await get<ReservationResponse>(
+      `/reservation/pnr/${encodeURIComponent(pnr)}`
+    );
 
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-
-      const data = await response.json();
-      console.log('Reservation cancelled successfully:', data);
-      return data;
-    } catch (error) {
-      console.error('cancelReservation error:', error);
-      throw error;
+    if (!data?.reservation) {
+      throw new Error('No reservation found for the provided PNR');
     }
+
+    return data.reservation;
+  };
+
+  const cancelReservation = async (
+    pnr: string,
+    email: string
+  ): Promise<ReservationActionResponse> => {
+    return await put<ReservationActionResponse>(
+      '/reservation/cancel-reservation',
+      { pnr, email }
+    );
   };
 
   return {
