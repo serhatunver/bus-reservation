@@ -31,11 +31,7 @@ const { data, signOut, status } = useAuth();
 		<div class="w-full">
 			<nav class="flex items-center justify-between">
 				<NuxtLink to="/" class="flex items-center">
-					<img
-						class="h-8 md:h-12 md:w-50"
-						src="../assets/busio.png"
-						alt="busio logo"
-					/>
+					<Logo class="h-8 md:h-10" />
 				</NuxtLink>
 
 				<!-- Desktop Navigation -->

@@ -37,11 +37,7 @@ const { status, data, signOut } = useAuth();
 			<SheetHeader
 				class="flex flex-row justify-between items-center px-4"
 			>
-				<img
-					class="h-8 w-auto"
-					src="https://busbud-pubweb-assets.global.ssl.fastly.net/horizon/BrandLogos/busbud/logo-color-lg.svg"
-					alt="busbud logo"
-				/>
+				<Logo />
 				<SheetClose as-child>
 					<Button
 						class="self-end z-1 size-12 border shadow-xl"
