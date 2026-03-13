@@ -1,17 +1,23 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { getLocalTimeZone, today } from '@internationalized/date';
+import type { SearchTripResponse, Trip } from '~/types/trip';
 
-import {
-  DateFormatter,
-  type DateValue,
-  getLocalTimeZone,
-  today,
-} from '@internationalized/date';
+interface SearchFormStop {
+  id: string;
+  name: string;
+}
+
+interface SearchFormState {
+  fromStop: SearchFormStop;
+  toStop: SearchFormStop;
+  outboundDate: ReturnType<typeof today>;
+}
 
 export const useSearchStore = defineStore('search', () => {
-  const router = useRouter();
-  const searchForm = ref({
+  const { get } = useApi();
+
+  const searchForm = ref<SearchFormState>({
     fromStop: {
       id: '684a07d98cac1cdecbe22ea1',
       name: 'Malatya',
@@ -23,7 +29,7 @@ export const useSearchStore = defineStore('search', () => {
     outboundDate: today(getLocalTimeZone()),
   });
 
-  const availableTrips = ref([]);
+  const availableTrips = ref<Trip[]>([]);
 
   const swapCities = () => {
     const temp = searchForm.value.fromStop;
@@ -40,30 +46,36 @@ export const useSearchStore = defineStore('search', () => {
     toStopId: string;
     outboundDate: string;
   }) => {
-    console.log('useSearchStore ~ searchForm:', searchForm.value);
     try {
-      const response = await fetch(
-        `http://localhost:3000/api/trip/search?fromStopId=${fromStopId}&toStopId=${toStopId}&outboundDate=${outboundDate}`
-      );
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
+      const data = await get<SearchTripResponse>('/trip/search', {
+        query: {
+          fromStopId,
+          toStopId,
+          outboundDate,
+        },
+      });
+
+      availableTrips.value = data.trips ?? [];
+
+      if (data.fromStop) {
+        searchForm.value.fromStop = {
+          id: data.fromStop._id,
+          name: data.fromStop.name,
+        };
       }
-      const data = await response.json();
-      availableTrips.value = data.trips;
 
-      console.log('useSearchStore ~ data:', data);
+      if (data.toStop) {
+        searchForm.value.toStop = {
+          id: data.toStop._id,
+          name: data.toStop.name,
+        };
+      }
 
-      searchForm.value.fromStop.id = data.fromStop._id;
-      searchForm.value.toStop.id = data.toStop._id;
-      searchForm.value.fromStop.name = data.fromStop.name;
-      searchForm.value.toStop.name = data.toStop.name;
-
-      console.log('useSearchStore ~ searchForm:', searchForm.value);
-
-      console.log(' fetchAvailableTrips ~ data:', data);
+      return data.trips;
     } catch (error) {
       console.error('Error fetching search results:', error);
       availableTrips.value = [];
+      throw error;
     }
   };
 
