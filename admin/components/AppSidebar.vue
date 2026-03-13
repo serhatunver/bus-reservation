@@ -16,7 +16,6 @@ import {
 	User,
 } from "lucide-vue-next";
 import NavUser from "@/components/NavUser.vue";
-import TeamSwitcher from "@/components/TeamSwitcher.vue";
 
 import {
 	Sidebar,
