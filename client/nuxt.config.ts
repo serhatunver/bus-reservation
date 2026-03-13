@@ -14,9 +14,14 @@ export default defineNuxtConfig({
     plugins: [tailwindcss()],
   },
   modules: ['shadcn-nuxt', '@pinia/nuxt', '@sidebase/nuxt-auth'],
+  runtimeConfig: {
+    public: {
+      apiBase: process.env.NUXT_PUBLIC_API_BASE_URL,
+    },
+  },
   auth: {
     isEnabled: true,
-    baseURL: 'http://localhost:3000/api/auth',
+    baseURL: process.env.NUXT_PUBLIC_API_BASE_URL + '/auth',
     provider: {
       type: 'local',
       pages: {
@@ -35,7 +40,10 @@ export default defineNuxtConfig({
         headerName: 'Authorization',
         maxAgeInSeconds: 60 * 60 * 24,
         sameSiteAttribute: 'strict',
-        cookieDomain: 'localhost',
+        cookieDomain:
+          process.env.NODE_ENV === 'production'
+            ? process.env.COOKIE_DOMAIN
+            : 'localhost',
         secureCookieAttribute: true,
         httpOnlyCookieAttribute: false,
       },
