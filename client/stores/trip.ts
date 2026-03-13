@@ -1,10 +1,26 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
+import type { Trip, TripResponse, AvailableSeatsResponse } from '~/types/trip';
+
+interface SelectedSeat {
+  seatNumber?: number;
+  [key: string]: unknown;
+}
+
+type AvailableSeatItem =
+  | number
+  | {
+      seatNumber: number;
+      isAvailable?: boolean;
+      gender?: string | null;
+    };
 
 export const useTripStore = defineStore('trip', () => {
-  const selectedTrip = ref({});
-  const selectedSeat = ref({});
-  const availableSeats = ref({});
+  const { get } = useApi();
+
+  const selectedTrip = ref<Trip | null>(null);
+  const selectedSeat = ref<SelectedSeat | null>(null);
+  const availableSeats = ref<AvailableSeatItem[]>([]);
 
   const fetchAvailableSeats = async ({
     tripId,
@@ -16,31 +32,34 @@ export const useTripStore = defineStore('trip', () => {
     toStopId: string;
   }) => {
     try {
-      const response = await fetch(
-        `http://localhost:3000/api/trip/available-seats/${tripId}?fromStopId=${fromStopId}&toStopId=${toStopId}`
+      const data = await get<AvailableSeatsResponse>(
+        `/trip/available-seats/${encodeURIComponent(tripId)}`,
+        {
+          query: {
+            fromStopId,
+            toStopId,
+          },
+        }
       );
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      const data = await response.json();
-      availableSeats.value = data.seats;
-      console.log('useSearchStore ~ data:', data);
+
+      availableSeats.value = Array.isArray(data.seats) ? data.seats : [];
+      return availableSeats.value;
     } catch (error) {
-      console.error('useSearchStore ~ fetchAvailableTrips error:', error);
+      console.error('fetchAvailableSeats error:', error);
+      availableSeats.value = [];
+      throw error;
     }
   };
 
   const fetchTrip = async (tripId: string) => {
     try {
-      const response = await fetch(`http://localhost:3000/api/trip/${tripId}`);
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      const data = await response.json();
+      const data = await get<TripResponse>(
+        `/trip/${encodeURIComponent(tripId)}`
+      );
       selectedTrip.value = data.trip;
-      console.log('useTripStore ~ data:', data);
+      return data.trip;
     } catch (error) {
-      console.error('useTripStore ~ fetchTrip error:', error);
+      console.error('fetchTrip error:', error);
       throw error;
     }
   };
@@ -51,17 +70,20 @@ export const useTripStore = defineStore('trip', () => {
     toStopId: string
   ) => {
     try {
-      const response = await fetch(
-        `http://localhost:3000/api/trip/trip-details/${tripId}?fromStopId=${fromStopId}&toStopId=${toStopId}`
+      const data = await get<TripResponse>(
+        `/trip/trip-details/${encodeURIComponent(tripId)}`,
+        {
+          query: {
+            fromStopId,
+            toStopId,
+          },
+        }
       );
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      const data = await response.json();
+
       selectedTrip.value = data.trip;
-      console.log('useTripStore ~ fetchTripDetails:', data);
+      return data.trip;
     } catch (error) {
-      console.error('useTripStore ~ fetchTrip error:', error);
+      console.error('fetchTripDetails error:', error);
       throw error;
     }
   };
