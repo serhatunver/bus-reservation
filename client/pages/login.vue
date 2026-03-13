@@ -10,7 +10,7 @@ definePageMeta({
 
 <template>
 	<div
-		class="m-auto flex w-full flex-col justify-center space-y-6 sm:w-[500px]"
+		class="m-auto flex w-full flex-col justify-center space-y-6 sm:w-[500px] py-6"
 	>
 		<LoginForm />
 		<p class="px-8 text-center text-sm text-muted-foreground">
