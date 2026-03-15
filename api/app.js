@@ -33,15 +33,12 @@ app.use('/api/user', userRoutes);
 app.use('/api/auth', authRoutes);
 
 const PORT = process.env.PORT || 3000;
-const MONGODB_URI =
-  process.env.MONGODB_URI || 'mongodb://localhost:27017/bus-reservation';
+const MONGO_URI = process.env.MONGO_URI;
 
 mongoose
-  .connect(MONGODB_URI)
+  .connect(MONGO_URI)
   .then(() => {
     console.log('MongoDB connected');
-    app.listen(PORT, () =>
-      console.log('Server running on http://localhost:3000')
-    );
+    app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
   })
   .catch((err) => console.error('MongoDB connection error:', err));
