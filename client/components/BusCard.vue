@@ -56,7 +56,7 @@ function formatDuration(minutes: number) {
 	>
 		<CardHeader class="flex flex-col space-y-4">
 			<div class="flex w-full items-center justify-between">
-				<img class="h-8 w-auto" src="../assets/busio.png" alt="" />
+				<Logo />
 				<div class="flex items-center">
 					<Wifi class="size-5" />
 					<Plug class="size-5" />
