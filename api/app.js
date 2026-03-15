@@ -32,7 +32,18 @@ app.use('/api/bus', busRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/auth', authRoutes);
 
-const PORT = process.env.PORT || 3000;
+// Health check endpoint
+app.get('/health', async (req, res) => {
+  const dbState = mongoose.connection.readyState; // 1 = connected
+  const dbStatus = dbState === 1 ? 'connected' : 'disconnected';
+  res.status(200).json({
+    status: 'ok',
+    db: dbStatus,
+    timestamp: new Date().toISOString(),
+  });
+});
+
+const PORT = parseInt(process.env.PORT || '3000', 10);
 const MONGO_URI = process.env.MONGO_URI;
 
 mongoose
