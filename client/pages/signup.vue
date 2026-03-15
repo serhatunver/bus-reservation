@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import SignUpForm from "@/components/SignUpView/SignUpForm.vue";
+import SignUpForm from "@/components/signup-view/SignUpForm.vue";
 definePageMeta({
 	auth: {
 		unauthenticatedOnly: true,

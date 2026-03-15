@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import LoginForm from "@/components/LoginView/LoginForm.vue";
+import LoginForm from "@/components/login-view/LoginForm.vue";
 definePageMeta({
 	auth: {
 		unauthenticatedOnly: true,
