@@ -20,8 +20,8 @@ import {
 	DialogTrigger,
 } from "@/components/ui/dialog";
 
-import Seat from "@/components/TripView/Seat.vue";
-import SeatLegend from "@/components/TripView/SeatLegend.vue";
+import Seat from "@/components/trip-view/Seat.vue";
+import SeatLegend from "@/components/trip-view/SeatLegend.vue";
 import { X } from "lucide-vue-next";
 
 interface SeatData {

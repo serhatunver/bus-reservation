@@ -26,7 +26,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import CustomInput from "@/components/CustomInput.vue";
-import SelectSeat from "@/components/TripView/SelectSeat.vue";
+import SelectSeat from "@/components/trip-view/SelectSeat.vue";
 import { ArrowRight, Loader } from "lucide-vue-next";
 
 const route = useRoute();

@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 
-import PassengerForm from "@/components/TripView/PassengerForm.vue";
+import PassengerForm from "@/components/trip-view/PassengerForm.vue";
 import { ArrowRight, Loader } from "lucide-vue-next";
 
 const route = useRoute();
