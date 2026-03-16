@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import express from 'express';
 import mongoose from 'mongoose';
+import connectMongo from './db/connectMongo.js';
 import cors from 'cors';
 
 import reservationRoutes from './routes/reservation.routes.js';
@@ -44,12 +45,15 @@ app.get('/health', async (req, res) => {
 });
 
 const PORT = parseInt(process.env.PORT || '3000', 10);
-const MONGO_URI = process.env.MONGO_URI;
 
-mongoose
-  .connect(MONGO_URI)
-  .then(() => {
-    console.log('MongoDB connected');
+async function startServer() {
+  try {
+    await connectMongo();
     app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-  })
-  .catch((err) => console.error('MongoDB connection error:', err));
+  } catch (err) {
+    console.error('Failed to start server:', err);
+    process.exit(1);
+  }
+}
+
+startServer();
