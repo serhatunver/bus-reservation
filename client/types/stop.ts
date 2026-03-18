@@ -6,3 +6,7 @@ export interface Stop {
   createdAt?: string;
   updatedAt?: string;
 }
+
+export interface StopSearchResponse {
+  stops: Stop[];
+}

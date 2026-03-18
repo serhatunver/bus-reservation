@@ -16,8 +16,8 @@ const handleSearch = () => {
 	router.push({
 		name: "search",
 		params: {
-			fromStopId: searchForm.value.fromStop.id,
-			toStopId: searchForm.value.toStop.id,
+			fromStopId: searchForm.value.fromStop._id,
+			toStopId: searchForm.value.toStop._id,
 		},
 		query: {
 			outboundDate: searchForm.value.outboundDate,

@@ -1,29 +1,19 @@
 <script lang="ts" setup>
-import { ref, defineProps } from "vue";
-import { Button } from "@/components/ui/button";
+import { ref } from "vue";
 import { Search, ArrowRightLeft } from "lucide-vue-next";
-import DatePicker from "@/components/DatePicker.vue";
-import SearchInput from "@/components/SearchInput.vue";
-
 import { useSearchStore } from "@/stores/search";
 import { storeToRefs } from "pinia";
+
 const searchStore = useSearchStore();
 const { searchForm } = storeToRefs(searchStore);
 const { swapCities } = searchStore;
 
-import {
-	DateFormatter,
-	type DateValue,
-	getLocalTimeZone,
-	today,
-} from "@internationalized/date";
+const isSwapping = ref(false);
 
-const disabled = ref(false);
-
-function spinDisabled() {
-	disabled.value = true;
+function animateSwap() {
+	isSwapping.value = true;
 	setTimeout(() => {
-		disabled.value = false;
+		isSwapping.value = false;
 	}, 300);
 }
 
@@ -33,6 +23,10 @@ defineProps({
 		default: "Search",
 	},
 });
+
+const emit = defineEmits<{
+	(e: "submit"): void;
+}>();
 </script>
 
 <template>
@@ -44,28 +38,29 @@ defineProps({
 		>
 			<SearchInput
 				class="w-full"
-				:modelValue="searchForm.fromStop.name"
-				@update:modelValue="searchForm.fromStop = $event"
+				v-model="searchForm.fromStop"
+				:modelValue="searchForm.fromStop"
 				placeholder="From Where"
 			/>
 			<Button
 				class="absolute bottom-0 p-6 size-14 right-4 top-7 z-[2] flex items-center justify-center sm:static border border-gray-400 dark:border-gray-600"
 				variant="secondary"
 				size="icon"
+				:disabled="isSwapping"
 				@click="
 					swapCities();
-					spinDisabled();
+					animateSwap();
 				"
 			>
 				<ArrowRightLeft
-					:class="{ spin: disabled }"
+					:class="{ spin: isSwapping }"
 					class="icon mx-6 size-6"
 				/>
 			</Button>
 			<SearchInput
 				class="w-full"
-				:modelValue="searchForm.toStop.name"
-				@update:modelValue="searchForm.toStop = $event"
+				v-model="searchForm.toStop"
+				:modelValue="searchForm.toStop"
 				placeholder="To Where"
 			/>
 		</div>
@@ -74,13 +69,13 @@ defineProps({
 		>
 			<DatePicker
 				class="flex w-full"
+				v-model="searchForm.outboundDate"
 				:modelValue="searchForm.outboundDate"
 				:placeholder="'Departure Date'"
-				@update:modelValue="searchForm.outboundDate = $event"
 			/>
 			<Button
 				class="flex h-14 w-full sm:w-40 text-lg"
-				@click="$emit('submit')"
+				@click="emit('submit')"
 			>
 				<Search class="size-5" />
 				<span>{{ searchButtonText }}</span>

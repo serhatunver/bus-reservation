@@ -6,16 +6,22 @@ import { computed, type HTMLAttributes, reactive, ref, watch } from "vue";
 import { provideCommandContext } from ".";
 
 const props = withDefaults(
-	defineProps<ListboxRootProps & { class?: HTMLAttributes["class"] }>(),
+	defineProps<
+		ListboxRootProps & {
+			class?: HTMLAttributes["class"];
+			ignoreFilter?: boolean;
+		}
+	>(),
 	{
 		modelValue: "",
+		ignoreFilter: false,
 	}
 );
 
 const emits = defineEmits<ListboxRootEmits>();
 
 const delegatedProps = computed(() => {
-	const { class: _, ...delegated } = props;
+	const { class: _, ignoreFilter: __, ...delegated } = props;
 
 	return delegated;
 });
@@ -38,7 +44,28 @@ const filterState = reactive({
 	},
 });
 
+function showAllItems() {
+	filterState.filtered.items = new Map();
+	filterState.filtered.groups = new Set();
+
+	for (const [id] of allItems.value) {
+		filterState.filtered.items.set(id, 1);
+	}
+
+	for (const [groupId] of allGroups.value) {
+		filterState.filtered.groups.add(groupId);
+	}
+
+	filterState.filtered.count = allItems.value.size;
+}
+
 function filterItems() {
+	// If ignoreFilter is true, show all items regardless of the search term
+	if (props.ignoreFilter) {
+		showAllItems();
+		return;
+	}
+
 	if (!filterState.search) {
 		filterState.filtered.count = allItems.value.size;
 		// Do nothing, each item will know to show itself because search is empty

@@ -22,7 +22,7 @@ const searchStops = async (req, res, next) => {
     const results = fuzzysort.go(q, stops, { key: 'name', limit: 5 });
 
     const suggestions = results.map((r) => ({
-      id: r.obj._id,
+      _id: r.obj._id,
       name: r.obj.name,
     }));
     // .sort((a, b) => a.name.localeCompare(b.name)); // Sort alphabetically by name

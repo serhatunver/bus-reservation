@@ -19,7 +19,6 @@ const searchStore = useSearchStore();
 
 const route = useRoute();
 const router = useRouter();
-// const availableTrips = ref();
 
 const outboundDate = route.query.outboundDate;
 
@@ -34,8 +33,8 @@ const handleSearch = async () => {
 	router.push({
 		name: "search",
 		params: {
-			fromStopId: searchForm.value.fromStop.id,
-			toStopId: searchForm.value.toStop.id,
+			fromStopId: searchForm.value.fromStop._id,
+			toStopId: searchForm.value.toStop._id,
 		},
 		query: {
 			outboundDate: searchForm.value.outboundDate,
